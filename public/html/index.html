@@ -3,16 +3,152 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
+    <link rel="stylesheet" href="css/index.css" />
     <title>Login</title>
     <link rel="icon" href="../images/icon.png" type="image/png" />
   </head>
   <body>
-    Welcome
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="card">
+            <div class="card-body">
+              <div class="register" style="display: none">
+                <h4 class="card-title mb-4">Register</h4>
+                <form id="registerForm">
+                  <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="firstname"
+                      name="firstname"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="lastname"
+                      name="lastname"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="dob"
+                      name="dob"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="emailReg">Email address</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="emailReg"
+                      name="emailReg"
+                      required
+                    />
+                    <div class="form-group">
+                      <label for="phone">Phone Number</label>
+                      <input
+                        type="tel"
+                        class="form-control"
+                        id="phone"
+                        name="phone"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="passwordReg">Password</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="passwordReg"
+                      name="passwordReg"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="passwordRegConfirm">Confirm Password</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="passwordRegConfirm"
+                      name="passwordRegConfirm"
+                      required
+                    />
+                  </div>
+                  <button
+                    id="registerButton"
+                    type="submit"
+                    class="btn btn-primary"
+                  >
+                    Register
+                  </button>
+                </form>
+              </div>
+
+              <div class="login">
+                <h4 class="card-title mb-4">Login</h4>
+                <form id="loginForm">
+                  <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email"
+                      name="email"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="password"
+                      name="password"
+                      required
+                    />
+                  </div>
+                  <button
+                    id="loginButton"
+                    type="submit"
+                    class="btn btn-primary"
+                  >
+                    Login
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+      integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+WyLkSYB/A/xI1UD4Ih7jRM2P0zod2/StA0"
+      crossorigin="anonymous"
+    ></script>
     <script src="js/cl_index.js"></script>
   </body>
 </html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <title>Dashboard</title>
+    <link rel="icon" href="../images/dashboard.png" type="image/png" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-left">
+      <a class="navbar-brand">ERP</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/dashboard/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/opdrachten/">Opdrachten</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/klanten/">Klanten</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/locaties/">Locaties</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/medewerkers/">Medewerkers</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+          <!-- Move search form to the right -->
+          <li class="nav-item">
+            <form id="searchForm" class="form-inline my-2 my-lg-0">
+              <input
+                id="searchInput"
+                class="form-control mr-sm-2"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+              />
+            </form>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Settings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="bg-light p-3 text-center">
+      <h1 id="yourName">Welcome,</h1>
+      <p>This is a generated page</p>
+    </header>
+
+    <!-- Content Area -->
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Main Content Area -->
+        <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+          <!-- Cards Section -->
+          <div class="row">
+            <!-- Clock Card -->
+            <div class="col-lg-4 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Clock</h5>
+                  <p class="card-text">Current time tracking information.</p>
+                  <button id="clockInBtn" class="btn btn-primary">
+                    Clock In
+                  </button>
+                  <button id="breakBtn" class="btn btn-info">Break</button>
+                  <button id="clockOutBtn" class="btn btn-danger">
+                    Clock Out
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Donut Chart Card -->
+            <div class="col-lg-4 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Worked Hours</h5>
+                  <!-- Select Menu -->
+                  <select id="selectProject" class="form-control mb-3">
+                    <option value="project-1">Project 1</option>
+                    <option value="project-2">Project 2</option>
+                    <option value="project-3">Project 3</option>
+                  </select>
+                  <canvas id="donutChart" width="200" height="200"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bar Chart Card -->
+            <div class="col-lg-4 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Periods of Year</h5>
+                  <!-- Select Menu -->
+                  <select id="selectYearPeriod" class="form-control mb-3">
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                    <option value="year">Year</option>
+                  </select>
+                  <canvas id="barChart" width="200" height="200"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="js/cl_dashboard.js"></script>
+  </body>
+</html>

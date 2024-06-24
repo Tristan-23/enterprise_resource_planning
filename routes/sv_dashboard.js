@@ -18,6 +18,13 @@ module.exports = function (pageName, exportMysql) {
     res.json({ message: "Server is connected to client!" });
   });
 
+  router.post("/time_between", (req, res) => {
+    const { table, data } = req.body;
+    const db = exportMysql.getDbServiceInstance();
+    const result = db.searchBetweenDates(table, data);
+    result.then((data) => res.json({ data })).catch((err) => console.log(err));
+  });
+
   router.post("/insert", (req, res) => {
     handleInsert(req, res, exportMysql);
   });

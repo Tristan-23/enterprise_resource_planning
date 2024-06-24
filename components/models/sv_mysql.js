@@ -325,6 +325,50 @@ class DbService {
     }
   }
 
+  async searchBetweenDates(table, data) {
+    try {
+      const tableExists = await this.checkTableExists(table);
+      if (!tableExists) {
+        return {
+          type: "ERROR",
+          msg: "Invalid table",
+        };
+      }
+
+      const start_date = new Date(data.start_date).toISOString().slice(0, 10);
+      const stop_date = new Date(data.stop_date).toISOString().slice(0, 10);
+
+      const selectQuery = `SELECT * FROM ${table} WHERE created_at BETWEEN ? AND ?`;
+      const [selectResult] = await connection.query(selectQuery, [
+        start_date,
+        stop_date,
+      ]);
+
+      if (selectResult.length > 0) {
+        const decryptedData = [];
+        for (const row of selectResult) {
+          const decryptedRow = {};
+          for (const column in row) {
+            decryptedRow[column] = row[column];
+          }
+          decryptedData.push(decryptedRow);
+        }
+        return decryptedData;
+      } else {
+        return {
+          type: "ERROR",
+          msg: "Failed to fetch rows",
+        };
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      return {
+        type: "ERROR",
+        msg: "An error occurred during fetch",
+      };
+    }
+  }
+
   async checkTableExists(table) {
     const query = `SHOW TABLES LIKE '${table}'`;
     const [rows] = await connection.query(query);

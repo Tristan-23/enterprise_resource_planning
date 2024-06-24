@@ -87,28 +87,11 @@
         <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
           <!-- Cards Section -->
           <div class="row">
-            <!-- Clock Card -->
-            <div class="col-lg-4 mb-4">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Clock</h5>
-                  <p class="card-text">Current time tracking information.</p>
-                  <button id="clockInBtn" class="btn btn-primary">
-                    Clock In
-                  </button>
-                  <button id="breakBtn" class="btn btn-info">Break</button>
-                  <button id="clockOutBtn" class="btn btn-danger">
-                    Clock Out
-                  </button>
-                </div>
-              </div>
-            </div>
-
             <!-- Donut Chart Card -->
             <div class="col-lg-4 mb-4">
               <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">Worked Hours</h5>
+                <div class="card-body d-flex flex-column align-items-center">
+                  <h5 class="card-title">Your Session</h5>
                   <!-- Select Menu -->
                   <select id="selectProject" class="form-control mb-3">
                     <option value="project-1">Project 1</option>
@@ -116,6 +99,19 @@
                     <option value="project-3">Project 3</option>
                   </select>
                   <canvas id="donutChart" width="200" height="200"></canvas>
+
+                  <!-- Clock buttons -->
+                  <div class="mt-3">
+                    <button id="clockInBtn" class="btn btn-primary mr-2">
+                      Clock In
+                    </button>
+                    <button id="breakBtn" class="btn btn-info mr-2">
+                      Break
+                    </button>
+                    <button id="clockOutBtn" class="btn btn-danger">
+                      Clock Out
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -124,13 +120,13 @@
             <div class="col-lg-4 mb-4">
               <div class="card">
                 <div class="card-body">
-                  <h5 class="card-title">Periods of Year</h5>
+                  <h5 class="card-title">Your Activity</h5>
                   <!-- Select Menu -->
-                  <select id="selectYearPeriod" class="form-control mb-3">
+                  <!-- <select id="selectYearPeriod" class="form-control mb-3">
                     <option value="week">Week</option>
                     <option value="month">Month</option>
                     <option value="year">Year</option>
-                  </select>
+                  </select> -->
                   <canvas id="barChart" width="200" height="200"></canvas>
                 </div>
               </div>

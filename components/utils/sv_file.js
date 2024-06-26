@@ -42,7 +42,7 @@ const createFilesForPage = (pageBaseName) => {
     </head>
     <body>
       <h1>Welcome to ${pageBaseName}</h1>
-      <p>This is a generated page</p>
+      <p>a desc or smth idk xD</p>
       <script src="js/${jsFileName}"></script>
     </body>
     </html>

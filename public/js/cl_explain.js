@@ -86,8 +86,6 @@ function toggleMenu(self) {
   console.log("Data:", data);
   console.log("Change:", change);
 
-  console.log(makeServerRequest());
-
   fetch(advancedUrl + server, {
     method: method,
     headers: {

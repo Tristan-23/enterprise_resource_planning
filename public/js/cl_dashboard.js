@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   fetchUserProjects(true);
-  createDonutChart();
 
   createBarChart();
   updateBarChart("week");
@@ -106,7 +105,9 @@ async function fetchUserProjects(updateList, returnNames) {
   if (returnNames) {
     return projectNames;
   }
+  // here the projects heave been loaded!
   checkButtonStatus();
+  createDonutChart();
 }
 
 function createDonutChart() {
@@ -118,7 +119,7 @@ function createDonutChart() {
       datasets: [
         {
           label: "Worked Hours",
-          data: [0, 0, 100],
+          data: [0, 0, 8],
           backgroundColor: ["#007bff", "#17a2b8", "#dc3545"],
         },
       ],
@@ -128,12 +129,65 @@ function createDonutChart() {
       maintainAspectRatio: true,
       plugins: {
         legend: {
-          position: "bottom",
-          onClick: function (event, legendItem) {}, // Function does nothing on legend click
+          display: false, // Hide legend
+        },
+        tooltip: {
+          callbacks: {
+            label: function (tooltipItem) {
+              return (
+                tooltipItem.label + ": " + tooltipItem.raw.toFixed(2) + "hrs"
+              );
+            },
+          },
         },
       },
     },
   });
+
+  let currentTimes = JSON.parse(localStorage.getItem("currentTimes")) || {};
+  let userId = user.id;
+  let selectedProject = document.getElementById("selectProject").value;
+
+  if (currentTimes[userId] && currentTimes[userId][selectedProject]) {
+    let projectData = currentTimes[userId][selectedProject];
+    updateDonutChart(projectData);
+  } else {
+    console.error("No data found in currentTimes for the selected project.");
+  }
+}
+
+function getDonutChartInstance() {
+  const donutCtx = document.getElementById("donutChart").getContext("2d");
+  return Chart.getChart(donutCtx, "doughnut");
+}
+
+function updateDonutChart(projectData) {
+  const { actual_duration, break_duration, remaining_duration } = projectData;
+
+  const hoursActual = timeToHours(actual_duration);
+  const hoursBreak = timeToHours(break_duration);
+  const hoursRemaining = timeToHours(remaining_duration);
+
+  function timeToHours(timeString) {
+    const [hours, minutes, seconds] = timeString.split(":").map(parseFloat);
+    let totalHours = hours + minutes / 60 + seconds / 3600;
+    return totalHours.toFixed(2);
+  }
+
+  const donutChart = getDonutChartInstance();
+
+  if (donutChart) {
+    donutChart.data.datasets[0].data = [
+      hoursActual,
+      hoursBreak,
+      hoursRemaining,
+    ];
+
+    // Optionally update labels or any other properties
+    donutChart.update();
+  } else {
+    console.error("Donut chart instance not found");
+  }
 }
 
 function getBarChartInstance() {
@@ -158,24 +212,32 @@ function updateBarChart(value) {
           "Quarter 3",
           "Quarter 4",
         ];
-        startDate = new Date(today.getFullYear(), 0, 1);
-        endDate = new Date(today.getFullYear(), 11, 31);
+        startDate = new Date(Date.UTC(today.getFullYear(), 0, 1));
+        endDate = new Date(Date.UTC(today.getFullYear(), 11, 31));
         break;
       case "month":
         periodLabel = "Week";
         barChart.data.labels = ["Week 1", "Week 2", "Week 3", "Week 4"];
-        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        startDate = new Date(
+          Date.UTC(today.getFullYear(), today.getMonth(), 1)
+        );
+        endDate = new Date(
+          Date.UTC(today.getFullYear(), today.getMonth() + 1, 0)
+        );
         break;
       case "week":
         periodLabel = "Day";
         barChart.data.labels = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5"];
-        const firstDayOfWeek = today.getDate() - today.getDay();
-        startDate = new Date(today.setDate(firstDayOfWeek));
-        endDate = new Date(today.setDate(firstDayOfWeek + 4));
+        const firstDayOfWeek = today.getUTCDate() - today.getUTCDay() + 1;
+        startDate = new Date(
+          Date.UTC(today.getFullYear(), today.getMonth(), firstDayOfWeek)
+        );
+        endDate = new Date(
+          Date.UTC(today.getFullYear(), today.getMonth(), firstDayOfWeek + 4)
+        );
         for (let i = 0; i < 5; i++) {
-          let newDate = new Date(today);
-          newDate.setDate(firstDayOfWeek + i);
+          let newDate = new Date(startDate);
+          newDate.setUTCDate(startDate.getUTCDate() + i);
           currentArray.push(formatDate(newDate));
         }
         break;
@@ -184,15 +246,12 @@ function updateBarChart(value) {
         return;
     }
 
-    // Generate labels based on startDate and endDate
     const labels = [];
     let currentDate = new Date(startDate);
     while (currentDate <= endDate) {
       labels.push(formatDate(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
     }
-
-    // Set barChart data labels
     barChart.data.labels = labels;
 
     sendServerReq(
@@ -208,10 +267,8 @@ function updateBarChart(value) {
     ).then((data) => {
       if (data.type === "ERROR") {
         console.error("Error fetching data:", data.msg);
-        // Handle error if needed
+        return;
       } else {
-        console.log(data);
-
         function convertTimeToHours(timeString) {
           const [hours, minutes, seconds] = timeString.split(":");
           return (
@@ -224,20 +281,18 @@ function updateBarChart(value) {
         const activeData = currentArray.map(() => 0);
         const passiveData = currentArray.map(() => 0);
         const inactiveData = currentArray.map(() => 0);
-        const workCountData = currentArray.map(() => 0);
+        const workCountData = currentArray.map(() => 0); // Initialize work count array
 
-        // Aggregate data entries with the same date
         data.forEach((item) => {
-          const index = currentArray.indexOf(
-            formatDate(new Date(item.created_at))
-          );
+          const index =
+            currentArray.indexOf(formatDate(new Date(item.created_at))) + 1;
           if (index !== -1) {
-            workCountData[index]++;
             activeData[index] += convertTimeToHours(item.actual_duration);
             passiveData[index] += convertTimeToHours(item.break_duration);
             inactiveData[index] += item.remaining_duration
               ? convertTimeToHours(item.remaining_duration)
               : 0;
+            workCountData[index]++; // Increment work count for this index
           }
         });
 
@@ -270,19 +325,19 @@ function createBarChart() {
       datasets: [
         {
           label: "Worked",
-          data: [1, 2, 3, 4, 5],
+          data: [0, 0, 0, 0, 0],
           backgroundColor: ["#007bff"],
           borderWidth: 1,
         },
         {
           label: "Break",
-          data: [1, 2, 3, 4, 5],
+          data: [0, 0, 0, 0, 0],
           backgroundColor: ["#17a2b8"],
           borderWidth: 1,
         },
         {
           label: "Remaining",
-          data: [1, 2, 3, 4, 5],
+          data: [0, 0, 0, 0, 0],
           backgroundColor: ["#dc3545"],
           borderWidth: 1,
         },
@@ -358,7 +413,8 @@ function handleClockButton(action) {
     for (let i = 0; i < breaks.length; i++) {
       if (breaks[i].start_break && breaks[i].stop_break) {
         totalDuration +=
-          new Date(breaks[i].stop_break) - new Date(breaks[i].start_break);
+          new Date(breaks[i].stop_break).getTime() -
+          new Date(breaks[i].start_break).getTime();
       }
     }
     return totalDuration;
@@ -380,18 +436,44 @@ function handleClockButton(action) {
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
   }
 
+  function msToTimeFormat(ms) {
+    let seconds = Math.floor(ms / 1000);
+    let hours = Math.floor(seconds / 3600);
+    let minutes = Math.floor((seconds % 3600) / 60);
+    seconds = seconds % 60;
+
+    function pad(number) {
+      if (number < 10) {
+        return "0" + number;
+      }
+      return number;
+    }
+
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  }
+
+  function timeFormatToMs(timeString) {
+    let [hours, minutes, seconds] = timeString.split(":").map(Number);
+    return (hours * 3600 + minutes * 60 + seconds) * 1000;
+  }
+
   switch (action) {
     case "clockIn":
       if (!currentTimes[userId]) {
         currentTimes[userId] = {};
       }
       currentTimes[userId][selectedProject] = {
-        clock_in: new Date().toISOString(),
+        clock_in: new Date(
+          new Date().getTime() - new Date().getTimezoneOffset() * 60000
+        )
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " "),
         clock_out: "",
         clock_duration: 0,
-        break_duration: 0,
-        actual_duration: 0,
-        remaining_duration: 0,
+        break_duration: "00:00:00",
+        actual_duration: "00:00:00",
+        remaining_duration: "08:00:00",
         breaks: [],
       };
 
@@ -404,24 +486,38 @@ function handleClockButton(action) {
       break;
 
     case "break":
-      let breaks = currentTimes[userId][selectedProject].breaks;
-      let lastBreakIndex = breaks.length - 1;
+      let breaksArray = currentTimes[userId][selectedProject].breaks;
+      let lastBreakIndex = breaksArray.length - 1;
 
-      if (lastBreakIndex === -1 || breaks[lastBreakIndex].stop_break !== "") {
-        console.log(`start_break : ${new Date().toISOString()}`);
-        breaks.push({
-          start_break: new Date().toISOString(),
+      if (
+        lastBreakIndex === -1 ||
+        breaksArray[lastBreakIndex].stop_break !== ""
+      ) {
+        console.log(`start_break : ${new Date()}`);
+        let now = new Date();
+        breaksArray.push({
+          start_break: now,
           stop_break: "",
         });
+
+        // Update actual_duration
+        let clockInTime = new Date(
+          currentTimes[userId][selectedProject].clock_in
+        ).getTime();
+        let breakDuration = calculateTotalBreakDuration(breaksArray);
+        let actualDuration = now.getTime() - clockInTime - breakDuration;
+        currentTimes[userId][selectedProject].actual_duration =
+          msToTimeFormat(actualDuration);
+
         clockInBtn.disabled = true;
         breakBtn.disabled = false;
         clockOutBtn.disabled = true;
       } else {
-        console.log(`stop_break : ${new Date().toISOString()}`);
-        breaks[lastBreakIndex].stop_break = new Date().toISOString();
-        // Update break_duration in seconds
-        currentTimes[userId][selectedProject].break_duration =
-          calculateTotalBreakDuration(breaks) / 1000;
+        console.log(`stop_break : ${new Date()}`);
+        breaksArray[lastBreakIndex].stop_break = new Date();
+        currentTimes[userId][selectedProject].break_duration = msToTimeFormat(
+          calculateTotalBreakDuration(breaksArray)
+        );
         clockInBtn.disabled = true;
         breakBtn.disabled = false;
         clockOutBtn.disabled = false;
@@ -429,30 +525,67 @@ function handleClockButton(action) {
       break;
 
     case "clockOut":
-      console.log(`clock_out : ${new Date().toISOString()}`);
-      currentTimes[userId][selectedProject].clock_out =
-        new Date().toISOString();
+      currentTimes[userId][selectedProject].clock_out = new Date(
+        new Date().getTime() - new Date().getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .slice(0, 19)
+        .replace("T", " ");
+      console.log(
+        `clock_out : ${currentTimes[userId][selectedProject].clock_out}`
+      );
 
+      // begin
       let clockInTime = new Date(
         currentTimes[userId][selectedProject].clock_in
       ).getTime();
+
+      // end
       let clockOutTime = new Date(
         currentTimes[userId][selectedProject].clock_out
       ).getTime();
+
+      // total duration
       currentTimes[userId][selectedProject].clock_duration =
         msToMySQLTimeFormat(clockOutTime - clockInTime);
+      let clockDurationString =
+        currentTimes[userId][selectedProject].clock_duration;
+      let clockDurationMs = timeFormatToMs(clockDurationString);
 
-      let actualDuration =
-        clockOutTime -
-        clockInTime -
-        currentTimes[userId][selectedProject].break_duration * 1000;
+      // breaks duration
+      let breakDuration = calculateTotalBreakDuration(
+        currentTimes[userId][selectedProject].breaks
+      );
+      currentTimes[userId][selectedProject].break_duration =
+        msToTimeFormat(breakDuration);
+
+      // total work time
+      let actualDuration = clockDurationMs - breakDuration;
       currentTimes[userId][selectedProject].actual_duration =
         msToMySQLTimeFormat(actualDuration);
 
-      currentTimes[userId][selectedProject].remaining_duration =
-        8 * 60 * 60 * 1000 - (clockOutTime - clockInTime);
+      // remaining time
+      var remainingTime =
+        currentTimes[userId][selectedProject].remaining_duration;
+      let remainingTimeMs = timeFormatToMs(remainingTime);
+      currentTimes[userId][selectedProject].remaining_duration = msToTimeFormat(
+        remainingTimeMs - clockDurationMs
+      );
 
-      console.log(currentTimes);
+      // database setup
+      let { remaining_duration, breaks, ...payload } =
+        currentTimes[userId][selectedProject];
+      payload.created_at = new Date().toISOString().slice(0, 10);
+      payload.worker_id = userId;
+      payload.project_id = selectedProject;
+      sendServerReq("insert", "POST", "worker_times", payload, {}).then(
+        (data) => {
+          if (data.type === "ERROR") {
+            console.error("Error fetching data:", data.msg);
+            return;
+          }
+        }
+      );
 
       clockInBtn.disabled = false;
       breakBtn.disabled = true;
@@ -464,6 +597,8 @@ function handleClockButton(action) {
       return;
   }
 
+  updateDonutChart(currentTimes[userId][selectedProject]);
+  updateBarChart("week");
   localStorage.setItem("currentTimes", JSON.stringify(currentTimes));
 }
 

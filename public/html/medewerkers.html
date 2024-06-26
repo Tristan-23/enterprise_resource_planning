@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/medewerkers.css" />
+    <title>Medewerkers</title>
+    <link rel="icon" href="../images/medewerkers.png" type="image/png" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-left">
+      <a class="navbar-brand">ERP</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/opdrachten/">Opdrachten</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/klanten/">Klanten</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/locaties/">Locaties</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/medewerkers/">Medewerkers</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+          <!-- Move search form to the right -->
+          <li class="nav-item">
+            <form id="searchForm" class="form-inline my-2 my-lg-0">
+              <input
+                id="searchInput"
+                class="form-control mr-sm-2"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+              />
+            </form>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Settings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="bg-light p-3 text-center">
+      <h1 id="yourName">Welcome,</h1>
+      <p>Find workers in your business</p>
+    </header>
+
+    <!-- Content Area -->
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Main Content Area -->
+        <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+          <!-- Header Section -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <form id="headerSearchForm" class="form-inline">
+              <input
+                id="headerSearchInput"
+                class="form-control mr-sm-2"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+              />
+            </form>
+            <select
+              id="sortSelect"
+              class="form-control mr-2"
+              onchange="sortCardContainer()"
+            >
+              <option value="alphabet">Alphabetical</option>
+              <option value="dates">Chronological</option>
+              <option value="dates">Group</option>
+            </select>
+            <button
+              id="conditionalButton"
+              class="btn btn-primary mr-2"
+              style="display: none"
+            >
+              Add
+            </button>
+          </div>
+
+          <!-- Column Content -->
+          <div class="row" id="cardContainer"></div>
+        </main>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="addModal"
+      tabindex="-1"
+      aria-labelledby="addModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addModalLabel">Add New Item</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="addItemForm">
+              <div class="form-group">
+                <label for="firstname">First Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="firstname"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="lastname">Last Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="lastname"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="dob">Date of birth</label>
+                <input type="date" class="form-control" id="dob" required />
+              </div>
+              <div class="form-group">
+                <label for="adress">Contact Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="item_email"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="city">Phone Number</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="item_phone"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="roleSelect">Group</label>
+                <select class="form-control" id="roleSelect" required>
+                  <!-- Options will be populated dynamically -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="locationSelect">Location</label>
+                <select class="form-control" id="locationSelect" required>
+                  <!-- Options will be populated dynamically -->
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Add Item</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="js/cl_medewerkers.js"></script>
+  </body>
+</html>
